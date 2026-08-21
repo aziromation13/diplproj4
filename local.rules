@@ -1,0 +1,33 @@
+1  alert tcp any any -> $HOME_NET any (msg:"LOCAL recon syn scan detected";
+2  flags:S,12; sid:1000001; rev:1; classtype:attempted-recon; priority:3;)
+3  alert tcp any any -> $HOME_NET any (msg:"LOCAL recon null scan detected";
+4  flags:0; sid:1000002; rev:1; classtype:attempted-recon; priority:3;)
+5  alert tcp any any -> $HOME_NET any (msg:"LOCAL recon fin scan detected";
+6  flags:F,12; sid:1000003; rev:1; classtype:attempted-recon; priority:3;)
+7  alert tcp any any -> $HOME_NET any (msg:"LOCAL recon xmas scan detected";
+8  flags:FPU,12; sid:1000004; rev:1; classtype:attempted-recon; priority:3;)
+9
+10 alert tcp any any -> $HOME_NET 22 (msg:"LOCAL ssh connection attempt";
+11 flow:to_server,established; sid:1000005; rev:1; priority:3;)
+12 alert tcp any any -> $HOME_NET 22 (msg:"LOCAL ssh brute force detected";
+13 flow:to_server; detection_filter:track by_src, count 5, seconds 60;
+14 sid:1000006; rev:1; classtype:attempted-admin; priority:1;)
+15
+16 alert icmp any any -> $HOME_NET any (msg:"LOCAL icmp ping"; itype:8;
+17 sid:1000007; rev:1; priority:3;)
+18 alert icmp any any -> $HOME_NET any (msg:"LOCAL icmp flood detected"; itype:8;
+19 detection_filter:track by_src, count 50, seconds 5;
+20 sid:1000008; rev:1; classtype:attempted-dos; priority:1;)
+21 alert tcp any any -> $HOME_NET any (msg:"LOCAL syn flood detected"; flags:S;
+22 detection_filter:track by_src, count 50, seconds 5;
+23 sid:1000009; rev:1; classtype:attempted-dos; priority:1;)
+24
+25 alert ip 192.168.10.0/24 any -> 192.168.20.0/24 any
+26 (msg:"LOCAL lateral movement to hr detected";
+27 sid:1000010; rev:1; priority:2;)
+28 alert ip 192.168.10.0/24 any -> 192.168.30.0/24 !80
+29 (msg:"LOCAL lateral movement to dmz detected";
+30 sid:1000011; rev:1; priority:2;)
+31 alert ip 192.168.10.0/24 any -> 192.168.30.0/24 !443
+32 (msg:"LOCAL lateral movement to dmz detected";
+33 sid:1000012; rev:1; priority:2;)
