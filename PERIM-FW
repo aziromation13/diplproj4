@@ -1,0 +1,23 @@
+hostname PERIM-FW
+no ip domain lookup
+ip domain name lab.local
+username admin privilege 15 secret cisco123
+interface Ethernet0/1
+ description TO-CORE-SW
+ ip address 10.0.1.1 255.255.255.0
+ ip verify unicast source reachable-via any
+ no shutdown
+interface <IFACE>
+ description TO-EDGE-RTR
+ ip address 10.0.0.2 255.255.255.252
+ no shutdown
+ip route 0.0.0.0 0.0.0.0 10.0.0.1
+ip access-list extended AUTO-BLOCK
+ 65000 permit ip any any
+crypto key generate rsa modulus 1024
+ip ssh version 2
+line vty 0 4
+ login local
+ transport input ssh
+end
+write memory
